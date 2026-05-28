@@ -19,8 +19,9 @@ ParametersAudioProcessor::ParametersAudioProcessor()
 #endif
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-      )
+                         ),
 #endif
+      apvts(*this, nullptr, "Parameters", createParameterLayout())
 {
 }
 

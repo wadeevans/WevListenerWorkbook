@@ -61,7 +61,9 @@ public:
   void setStateInformation(const void *data, int sizeInBytes) override;
 
 private:
-  juce::AudioProcessorValueTreeState parameters{*this, nullptr, "Parameters", createParameterLayout()};
+  // Alternative: in-class initialisation (C++17, valid but less conventional in JUCE)
+  // juce::AudioProcessorValueTreeState parameters{*this, nullptr, "Parameters", createParameterLayout()};
+  juce::AudioProcessorValueTreeState apvts;
 
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
