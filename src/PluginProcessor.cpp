@@ -12,14 +12,14 @@
 //==============================================================================
 ParametersAudioProcessor::ParametersAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+    : AudioProcessor(BusesProperties()
+#if !JucePlugin_IsMidiEffect
+#if !JucePlugin_IsSynth
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+      )
 #endif
 {
 }
@@ -36,29 +36,29 @@ const juce::String ParametersAudioProcessor::getName() const
 
 bool ParametersAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool ParametersAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool ParametersAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double ParametersAudioProcessor::getTailLengthSeconds() const
@@ -68,8 +68,8 @@ double ParametersAudioProcessor::getTailLengthSeconds() const
 
 int ParametersAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1; // NB: some hosts don't cope very well if you tell them there are 0 programs,
+              // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int ParametersAudioProcessor::getCurrentProgram()
@@ -77,21 +77,21 @@ int ParametersAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void ParametersAudioProcessor::setCurrentProgram (int index)
+void ParametersAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const juce::String ParametersAudioProcessor::getProgramName (int index)
+const juce::String ParametersAudioProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void ParametersAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void ParametersAudioProcessor::changeProgramName(int index, const juce::String &newName)
 {
 }
 
 //==============================================================================
-void ParametersAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void ParametersAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -104,35 +104,34 @@ void ParametersAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool ParametersAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool ParametersAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+#if JucePlugin_IsMidiEffect
+    juce::ignoreUnused(layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
     // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+#if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+#endif
 
     return true;
-  #endif
+#endif
 }
 #endif
 
-void ParametersAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void ParametersAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
     // In case we have more outputs than inputs, this code clears any output
@@ -142,7 +141,7 @@ void ParametersAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear(i, 0, buffer.getNumSamples());
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -152,7 +151,7 @@ void ParametersAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     // interleaved by keeping the same state.
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        auto *channelData = buffer.getWritePointer(channel);
 
         // ..do something to the data...
     }
@@ -164,28 +163,39 @@ bool ParametersAudioProcessor::hasEditor() const
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* ParametersAudioProcessor::createEditor()
+juce::AudioProcessorEditor *ParametersAudioProcessor::createEditor()
 {
-    return new ParametersAudioProcessorEditor (*this);
+    return new ParametersAudioProcessorEditor(*this);
 }
 
 //==============================================================================
-void ParametersAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void ParametersAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void ParametersAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void ParametersAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
 
+juce::AudioProcessorValueTreeState::ParameterLayout ParametersAudioProcessor::createParameterLayout()
+{
+    return {std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{"gain", 1}, // parameter ID - used to reference it in code
+        "Gain",                       // parameter name - shown in host automation
+        0.0f,                         // minimum
+        1.0f,                         // maximum
+        1.0f                          // default
+        )};
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
-juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     return new ParametersAudioProcessor();
 }
