@@ -1,3 +1,3 @@
 # WevListenerWorkbook
 
-# Stage 03 — Naive Polling
+# Stage 03 — Direct Parameter Value Retrieval 

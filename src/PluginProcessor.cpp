@@ -135,6 +135,8 @@ void ParametersAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, ju
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+    auto gainValue = apvts.getRawParameterValue("gain")->load();
+
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -155,6 +157,10 @@ void ParametersAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, ju
         auto *channelData = buffer.getWritePointer(channel);
 
         // ..do something to the data...
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            channelData[sample] *= gainValue;
+        }
     }
 }
 
