@@ -20,7 +20,8 @@
 //==============================================================================
 /**
  */
-class ParametersAudioProcessor : public juce::AudioProcessor
+class ParametersAudioProcessor : public juce::AudioProcessor,
+                                 public juce::AudioProcessorValueTreeState::Listener
 {
 public:
   //==============================================================================
@@ -60,10 +61,17 @@ public:
   void getStateInformation(juce::MemoryBlock &destData) override;
   void setStateInformation(const void *data, int sizeInBytes) override;
 
+  void parameterChanged(const juce::String &parameterID, float newValue) override;
+
 private:
   // Alternative: in-class initialisation (C++17, valid but less conventional in JUCE)
   // juce::AudioProcessorValueTreeState parameters{*this, nullptr, "Parameters", createParameterLayout()};
   juce::AudioProcessorValueTreeState apvts;
+
+  // Use brace initialisation { } not assignment =
+  // std::atomic cannot be copied or assigned at initialisation
+  // = 1.0f may work on some compilers but is not portable
+  std::atomic<float> gainAtomic{1.0f}; // default value
 
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
