@@ -24,11 +24,13 @@ ParametersAudioProcessor::ParametersAudioProcessor()
       apvts(*this, nullptr, "Parameters", createParameterLayout())
 {
     apvts.addParameterListener("gain", this);
+    apvts.addParameterListener("mute", this);
 }
 
 ParametersAudioProcessor::~ParametersAudioProcessor()
 {
     apvts.removeParameterListener("gain", this);
+    apvts.removeParameterListener("mute", this);
 }
 
 //==============================================================================
@@ -134,6 +136,13 @@ bool ParametersAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts
 void ParametersAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
+
+    if (muteAtomic.load())
+    {
+        buffer.clear();
+        return;
+    }
+
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -196,12 +205,18 @@ void ParametersAudioProcessor::setStateInformation(const void *data, int sizeInB
 juce::AudioProcessorValueTreeState::ParameterLayout ParametersAudioProcessor::createParameterLayout()
 {
     return {std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID{"gain", 1}, // parameter ID - used to reference it in code
-        "Gain",                       // parameter name - shown in host automation
-        0.0f,                         // minimum
-        1.0f,                         // maximum
-        1.0f                          // default
-        )};
+                juce::ParameterID{"gain", 1}, // parameter ID - used to reference it in code
+                "Gain",                       // parameter name - shown in host automation
+                0.0f,                         // minimum
+                1.0f,                         // maximum
+                1.0f                          // default
+                ),
+
+            std::make_unique<juce::AudioParameterBool>(
+                juce::ParameterID{"mute", 1}, // parameter ID - used to reference it in code
+                "Mute",                       // parameter name - shown in host automation
+                false                         // default
+                )};
 }
 
 void ParametersAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
@@ -209,6 +224,10 @@ void ParametersAudioProcessor::parameterChanged(const juce::String &parameterID,
     if (parameterID == "gain")
     {
         gainAtomic.store(newValue);
+    }
+    else if (parameterID == "mute")
+    {
+        muteAtomic.store(newValue > 0.5f); // store as boolean
     }
 }
 

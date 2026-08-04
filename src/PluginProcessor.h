@@ -72,6 +72,7 @@ private:
   // std::atomic cannot be copied or assigned at initialisation
   // = 1.0f may work on some compilers but is not portable
   std::atomic<float> gainAtomic{1.0f}; // default value
+  std::atomic<bool> muteAtomic{false}; // default value
 
   static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
